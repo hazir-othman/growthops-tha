@@ -9,6 +9,7 @@ import com.growthops.travelinsurance.repository.PolicyRepository;
 import java.math.BigDecimal;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,34 +41,7 @@ public class InsuranceService {
             journeyForm.getStartDate(),
             journeyForm.getEndDate());
 
-    Optional<Customer> existingCustomerOpt = customerRepository.findByNric(customerForm.getNric());
-    Customer customer;
-
-    // update customer details if IC already exists
-    if (existingCustomerOpt.isPresent()) {
-      customer = existingCustomerOpt.get();
-      customer.setFullName(customerForm.getFullName());
-      customer.setEmail(customerForm.getEmail());
-      customer.setMobileNo(customerForm.getMobileNo());
-      customer.setAddressLine1(customerForm.getAddressLine1());
-      customer.setAddressLine2(customerForm.getAddressLine2());
-      customer.setPostcode(customerForm.getPostcode());
-      customer.setDob(customerForm.getDob());
-      customer.setGender(customerForm.getGender());
-    } else {
-      customer = new Customer();
-      customer.setFullName(customerForm.getFullName());
-      customer.setNric(customerForm.getNric());
-      customer.setDob(customerForm.getDob());
-      customer.setGender(customerForm.getGender());
-      customer.setEmail(customerForm.getEmail());
-      customer.setMobileNo(customerForm.getMobileNo());
-      customer.setAddressLine1(customerForm.getAddressLine1());
-      customer.setAddressLine2(customerForm.getAddressLine2());
-      customer.setPostcode(customerForm.getPostcode());
-    }
-
-    customer = customerRepository.save(customer);
+    Customer customer = this.saveOrUpdateCustomer(customerForm);
 
     Policy policy = new Policy();
     policy.setCustomer(customer);
@@ -79,5 +53,36 @@ public class InsuranceService {
     policy.setTotalAmount(totalAmount);
 
     return policyRepository.save(policy);
+  }
+
+  @CachePut(value = "customerProfiles", key = "#form.nric")
+  public Customer saveOrUpdateCustomer(CustomerForm form) {
+    Optional<Customer> existingCustomerOpt = customerRepository.findByNric(form.getNric());
+    Customer customer;
+
+    if (existingCustomerOpt.isPresent()) {
+      customer = existingCustomerOpt.get();
+      customer.setFullName(form.getFullName());
+      customer.setEmail(form.getEmail());
+      customer.setMobileNo(form.getMobileNo());
+      customer.setAddressLine1(form.getAddressLine1());
+      customer.setAddressLine2(form.getAddressLine2());
+      customer.setPostcode(form.getPostcode());
+      customer.setDob(form.getDob());
+      customer.setGender(form.getGender());
+    } else {
+      customer = new Customer();
+      customer.setFullName(form.getFullName());
+      customer.setNric(form.getNric());
+      customer.setDob(form.getDob());
+      customer.setGender(form.getGender());
+      customer.setEmail(form.getEmail());
+      customer.setMobileNo(form.getMobileNo());
+      customer.setAddressLine1(form.getAddressLine1());
+      customer.setAddressLine2(form.getAddressLine2());
+      customer.setPostcode(form.getPostcode());
+    }
+
+    return customerRepository.save(customer);
   }
 }

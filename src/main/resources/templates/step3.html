@@ -164,7 +164,7 @@
         if (dateObj.getFullYear() === fullYear && dateObj.getMonth() === (month - 1) && dateObj.getDate() === day) {
           const formattedMonth = String(month).padStart(2, '0');
           const formattedDay = String(day).padStart(2, '0');
-          dobDisplay.value = `${fullYear}-${formattedMonth}-${formattedDay}`;
+          dobDisplay.value = `${formattedDay}-${formattedMonth}-${fullYear}`;
 
           const lastDigit = parseInt(nricVal.charAt(11), 10);
           genderDisplay.value = (lastDigit % 2 !== 0) ? 'MALE' : 'FEMALE';
