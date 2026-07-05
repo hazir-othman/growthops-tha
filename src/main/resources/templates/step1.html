@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Insurance Self-Service - Step 1</title>
+  <!-- Bootstrap 5 via Webjars -->
+  <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f4f6f9;
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .progress-bar-container {
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <h2 class="text-center mb-4 text-primary fw-bold">Travel Insurance Portal</h2>
+
+        <div class="progress-bar-container">
+          <div class="d-flex justify-content-between mb-1 small text-muted">
+            <span>Step 1: Coverage & Journey</span>
+            <span>0% Complete</span>
+          </div>
+          <div class="progress" style="height: 8px;">
+            <div class="progress-bar bg-primary" role="progressbar" style="width: 0%;" aria-valuenow="0"
+              aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+
+        <div class="card p-4">
+          <h4 class="card-title mb-4 fw-semibold">Select Coverage & Journey Time</h4>
+
+          <form th:action="@{/step1}" th:object="${journeyForm}" method="post" id="journeyForm">
+
+            <div class="mb-3">
+              <label for="coverageType" class="form-label fw-medium">Coverage Option</label>
+              <select id="coverageType" th:field="*{coverageType}" class="form-select"
+                th:classappend="${#fields.hasErrors('coverageType')} ? 'is-invalid' : ''" onchange="updateEndDate()">
+                <option value="">-- Choose Coverage --</option>
+                <option value="SINGLE">SINGLE (Single Trip)</option>
+                <option value="ANNUAL">ANNUAL (Annual Coverage)</option>
+              </select>
+              <div class="invalid-feedback" th:if="${#fields.hasErrors('coverageType')}" th:errors="*{coverageType}">
+                Coverage Option Error</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="areaOfTravel" class="form-label fw-medium">Area of Travel</label>
+              <select id="areaOfTravel" th:field="*{areaOfTravel}" class="form-select"
+                th:classappend="${#fields.hasErrors('areaOfTravel')} ? 'is-invalid' : ''">
+                <option value="">-- Choose Area --</option>
+                <option value="AREA 1">AREA 1</option>
+                <option value="AREA 2">AREA 2</option>
+                <option value="AREA 3">AREA 3</option>
+                <option value="AREA 4">AREA 4 (Not applicable for Annual)</option>
+              </select>
+              <div class="invalid-feedback" th:if="${#fields.hasErrors('areaOfTravel')}" th:errors="*{areaOfTravel}">
+                Area of Travel Error</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="startDate" class="form-label fw-medium">Start Date</label>
+              <input type="date" id="startDate" th:field="*{startDate}" class="form-control"
+                th:classappend="${#fields.hasErrors('startDate')} ? 'is-invalid' : ''" onchange="updateEndDate()">
+              <div class="invalid-feedback" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}">Start
+                Date Error</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="endDate" class="form-label fw-medium">End Date</label>
+              <input type="date" id="endDate" th:field="*{endDate}" class="form-control"
+                th:classappend="${#fields.hasErrors('endDate')} ? 'is-invalid' : ''">
+              <div class="invalid-feedback" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}">End Date
+                Error</div>
+              <div class="form-text text-info" id="endDateHelp" style="display:none;">
+                For Annual plans, the End Date is locked to exactly 1 year - 1 day from the Start Date.
+              </div>
+            </div>
+
+            <div class="d-grid mt-4">
+              <button type="submit" class="btn btn-primary btn-lg fw-medium">Next: Choose Plan</button>
+            </div>
+
+          </form>
+        </div>
+
+        <div class="mt-4 p-3 bg-white rounded-3 shadow-sm text-secondary small">
+          <h6 class="fw-bold mb-3 text-dark">Policy Guidelines:</h6>
+          <ul class="mb-3">
+            <li><strong>Start Date:</strong> Must be today or within 1 year from today.</li>
+            <li><strong>Single Trip:</strong> Max duration is 180 days.</li>
+            <li><strong>Annual Coverage:</strong> Fixed period of 1 year.</li>
+          </ul>
+
+          <h6 class="fw-bold mb-3 text-dark">Geographic Coverages:</h6>
+          <ul class="mb-3">
+            <li class="mb-1"><strong>Area 1:</strong> Australia, Brunei, Cambodia, China, Hong Kong,
+              India, Indonesia, Japan, Korea, Laos, Macau, Maldives, Myanmar, New Zealand, Pakistan,
+              Philippines, Singapore, Sri Lanka, Taiwan, Thailand and Vietnam</li>
+            <li class="mb-1"><strong>Area 2:</strong> Europe, Tibet, Nepal, Mongolia, Bhutan and
+              Countries in Area 1</li>
+            <li class="mb-1"><strong>Area 3:</strong> Worldwide and countries in Area 1 and 2 but
+              excluding Afghanistan, Cuba, Democratic Republic of Congo, Iran, Iraq, Sudan and Syria
+            </li>
+            <li class="mb-0"><strong>Area 4:</strong> Malaysia (single trip between Peninsular and East
+              Malaysia and vice versa) <span class="text-danger fw-medium">(Not applicable for Annual
+                Coverage)</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateDateConstraints() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${yyyy}-${mm}-${dd}`;
+
+      const oneYearLater = new Date();
+      oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+      const max_yyyy = oneYearLater.getFullYear();
+      const max_mm = String(oneYearLater.getMonth() + 1).padStart(2, '0');
+      const max_dd = String(oneYearLater.getDate()).padStart(2, '0');
+      const oneYearLaterStr = `${max_yyyy}-${max_mm}-${max_dd}`;
+
+      const startDateInput = document.getElementById('startDate');
+      console.debug({ todayStr, oneYearLaterStr });
+      startDateInput.min = todayStr;
+      startDateInput.max = oneYearLaterStr;
+    }
+
+    function updateEndDate() {
+      const coverage = document.getElementById('coverageType').value;
+      const startDateVal = document.getElementById('startDate').value;
+      const endDateInput = document.getElementById('endDate');
+      const endDateHelp = document.getElementById('endDateHelp');
+
+      if (coverage === 'ANNUAL') {
+        if (startDateVal) {
+          const start = new Date(startDateVal);
+          start.setFullYear(start.getFullYear() + 1);
+          start.setDate(start.getDate() - 1);
+
+          const yyyy = start.getFullYear();
+          const mm = String(start.getMonth() + 1).padStart(2, '0');
+          const dd = String(start.getDate()).padStart(2, '0');
+
+          endDateInput.value = `${yyyy}-${mm}-${dd}`;
+        } else {
+          endDateInput.value = '';
+        }
+        endDateInput.readOnly = true;
+        endDateInput.classList.add('bg-light');
+        endDateHelp.style.display = 'block';
+        endDateInput.removeAttribute('min');
+        endDateInput.removeAttribute('max');
+      } else {
+        endDateInput.readOnly = false;
+        endDateInput.classList.remove('bg-light');
+        endDateHelp.style.display = 'none';
+
+        if (startDateVal) {
+          endDateInput.min = startDateVal;
+
+          const start = new Date(startDateVal);
+          start.setDate(start.getDate() + 179);
+          const max_yyyy = start.getFullYear();
+          const max_mm = String(start.getMonth() + 1).padStart(2, '0');
+          const max_dd = String(start.getDate()).padStart(2, '0');
+          const maxEndDateStr = `${max_yyyy}-${max_mm}-${max_dd}`;
+
+          endDateInput.max = maxEndDateStr;
+
+          const currentEndVal = endDateInput.value;
+          if (currentEndVal) {
+            if (currentEndVal < startDateVal || currentEndVal > maxEndDateStr) {
+              endDateInput.value = '';
+            }
+          }
+        } else {
+          endDateInput.removeAttribute('min');
+          endDateInput.removeAttribute('max');
+        }
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+      updateDateConstraints();
+      updateEndDate();
+    });
+  </script>
+
+  <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

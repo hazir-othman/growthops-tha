@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Insurance Self-Service - Purchase Successful</title>
+  <!-- Bootstrap 5 via Webjars -->
+  <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f4f6f9;
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .success-icon {
+      font-size: 5rem;
+      color: #198754;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+
+        <div class="card p-5 text-center">
+          <div class="mb-4">
+            <span class="success-icon">✓</span>
+          </div>
+
+          <h2 class="text-success fw-bold mb-2">Purchase Successful!</h2>
+          <p class="text-muted mb-4">Your travel insurance policy has been processed successfully.</p>
+
+          <div class="p-4 bg-light rounded-3 text-start mb-4">
+            <h5 class="fw-semibold text-dark mb-3 border-bottom pb-2">Policy Receipt</h5>
+
+            <div class="row mb-2">
+              <div class="col-sm-5 text-secondary">Policy Reference:</div>
+              <div class="col-sm-7 fw-bold" th:text="${'POL-' + #numbers.formatInteger(policy.id, 6)}">
+                POL-000001</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-sm-5 text-secondary">Insured Person:</div>
+              <div class="col-sm-7 fw-medium" th:text="${policy.customer.fullName}">Ali Muthu</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-sm-5 text-secondary">Coverage Option:</div>
+              <div class="col-sm-7" th:text="${policy.coverageType}">SINGLE</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-sm-5 text-secondary">Area of Travel:</div>
+              <div class="col-sm-7">
+                <span th:text="${policy.areaOfTravel}">AREA 1</span>
+                <div class="small text-muted" th:text="${policy.areaOfTravelDescription}">Australia, Brunei, ...</div>
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-sm-5 text-secondary">Plan Level:</div>
+              <div class="col-sm-7 fw-semibold text-primary"
+                th:text="${policy.planType == 'PLAN_A' ? 'Plan A' : 'Plan B'}">Plan A</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-sm-5 text-secondary">Start Date:</div>
+              <div class="col-sm-7" th:text="${#temporals.format(policy.startDate, 'dd MMM yyyy')}">01 Jan
+                2026</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-sm-5 text-secondary">End Date:</div>
+              <div class="col-sm-7" th:text="${#temporals.format(policy.endDate, 'dd MMM yyyy')}">05 Jan
+                2026</div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-5 text-secondary fw-bold">Premium Paid:</div>
+              <div class="col-sm-7 fw-bold text-success fs-5">
+                RM <span th:text="${#numbers.formatDecimal(policy.totalAmount, 1, 'COMMA', 2, 'POINT')}">120.00</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-grid gap-2">
+            <a th:href="@{/step1}" class="btn btn-primary btn-lg fw-medium">Purchase Another Policy</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

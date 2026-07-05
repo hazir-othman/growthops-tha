@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Insurance Self-Service - Step 2</title>
+  <!-- Bootstrap 5 via Webjars -->
+  <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f4f6f9;
+    }
+
+    .card-plan {
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .card-plan:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-plan.selected {
+      border-color: #0d6efd;
+      background-color: #f0f7ff;
+    }
+
+    .progress-bar-container {
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-10 col-lg-8">
+        <h2 class="text-center mb-4 text-primary fw-bold">Travel Insurance Portal</h2>
+
+        <div class="progress-bar-container">
+          <div class="d-flex justify-content-between mb-1 small text-muted">
+            <span>Step 2: Choose Plan</span>
+            <span>25% Complete</span>
+          </div>
+          <div class="progress" style="height: 8px;">
+            <div class="progress-bar bg-primary" role="progressbar" style="width: 25%;" aria-valuenow="25"
+              aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}">
+          Error message
+        </div>
+
+        <div class="card p-3 mb-4 bg-white text-secondary">
+          <div class="row text-center text-md-start">
+            <div class="col-md-3">
+              <strong class="text-dark">Coverage Type:</strong> <span
+                th:text="${journeyForm.coverageType}">SINGLE</span>
+            </div>
+            <div class="col-md-4">
+              <strong class="text-dark">Area:</strong> <span th:text="${journeyForm.areaOfTravel}">AREA 1</span>
+              <div class="small text-muted" th:text="${journeyForm.areaOfTravelDescription}">Australia, Brunei, ...</div>
+            </div>
+            <div class="col-md-5">
+              <strong class="text-dark">Duration:</strong>
+              <span th:text="${#temporals.format(journeyForm.startDate, 'dd MMM yyyy')}">01 Jan
+                2026</span> to
+              <span th:text="${#temporals.format(journeyForm.endDate, 'dd MMM yyyy')}">05 Jan 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <form th:action="@{/step2}" method="post" id="planForm">
+          <input type="hidden" name="plan" id="selectedPlanInput" th:value="${selectedPlan}">
+
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <div class="card card-plan p-4 h-100 text-center" id="cardPlanA" onclick="selectPlan('PLAN_A')">
+                <div class="mb-2">
+                  <span class="badge bg-secondary px-3 py-2 fs-6">PLAN A</span>
+                </div>
+                <h3 class="my-3 text-primary fw-bold">
+                  RM <span th:text="${#numbers.formatDecimal(priceA, 1, 'COMMA', 2, 'POINT')}">100.00</span>
+                </h3>
+                <p class="text-muted">
+                  <span th:if="${journeyForm.coverageType == 'SINGLE'}">
+                    RM <span
+                      th:text="${journeyForm.areaOfTravel == 'AREA 1' ? '10' : (journeyForm.areaOfTravel == 'AREA 2' ? '15' : (journeyForm.areaOfTravel == 'AREA 3' ? '20' : '5'))}">10</span>
+                    / day rate
+                  </span>
+                  <span th:if="${journeyForm.coverageType == 'ANNUAL'}">
+                    Annual flat rate
+                  </span>
+                </p>
+                <hr>
+                <ul class="list-unstyled text-start small text-secondary">
+                  <li class="mb-2">✓ Medical expenses coverage up to RM 50,000</li>
+                  <li class="mb-2">✓ Travel delay compensations</li>
+                  <li class="mb-2">✓ 24/7 Global emergency assistance hotline</li>
+                  <li class="mb-2">✓ Baggage loss/damage protection</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="card card-plan p-4 h-100 text-center" id="cardPlanB" onclick="selectPlan('PLAN_B')">
+                <div class="mb-2">
+                  <span class="badge bg-primary px-3 py-2 fs-6">PLAN B (Premium)</span>
+                </div>
+                <h3 class="my-3 text-primary fw-bold">
+                  RM <span th:text="${#numbers.formatDecimal(priceB, 1, 'COMMA', 2, 'POINT')}">150.00</span>
+                </h3>
+                <p class="text-muted">
+                  <span th:if="${journeyForm.coverageType == 'SINGLE'}">
+                    RM <span
+                      th:text="${journeyForm.areaOfTravel == 'AREA 1' ? '20' : (journeyForm.areaOfTravel == 'AREA 2' ? '30' : (journeyForm.areaOfTravel == 'AREA 3' ? '40' : '10'))}">20</span>
+                    / day rate
+                  </span>
+                  <span th:if="${journeyForm.coverageType == 'ANNUAL'}">
+                    Annual flat rate
+                  </span>
+                </p>
+                <hr>
+                <ul class="list-unstyled text-start small text-secondary">
+                  <li class="mb-2">✓ Double coverage: Medical up to RM 150,000</li>
+                  <li class="mb-2">✓ Trip cancellation reimbursement</li>
+                  <li class="mb-2">✓ 24/7 Global emergency assistance hotline</li>
+                  <li class="mb-2">✓ Baggage loss/damage protection + electronics</li>
+                  <li class="mb-2">✓ Home protection coverage while away</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <a th:href="@{/step1}" class="btn btn-outline-secondary btn-lg px-4">Back</a>
+            <button type="submit" class="btn btn-primary btn-lg px-5 fw-semibold" id="nextButton" disabled>Next:
+              Customer Details</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function selectPlan(plan) {
+      document.getElementById('selectedPlanInput').value = plan;
+
+      document.getElementById('cardPlanA').classList.remove('selected');
+      document.getElementById('cardPlanB').classList.remove('selected');
+
+      if (plan === 'PLAN_A') {
+        document.getElementById('cardPlanA').classList.add('selected');
+      } else if (plan === 'PLAN_B') {
+        document.getElementById('cardPlanB').classList.add('selected');
+      }
+
+      document.getElementById('nextButton').removeAttribute('disabled');
+    }
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+      const preselected = document.getElementById('selectedPlanInput').value;
+      if (preselected) {
+        selectPlan(preselected);
+      }
+    });
+  </script>
+
+  <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

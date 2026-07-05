@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Insurance Self-Service - Step 4</title>
+  <!-- Bootstrap 5 via Webjars -->
+  <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f4f6f9;
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .progress-bar-container {
+      margin-bottom: 2rem;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #495057;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-10 col-lg-8">
+        <h2 class="text-center mb-4 text-primary fw-bold">Travel Insurance Portal</h2>
+
+        <div class="progress-bar-container">
+          <div class="d-flex justify-content-between mb-1 small text-muted">
+            <span>Step 4: Summary & Confirm</span>
+            <span>75% Complete</span>
+          </div>
+          <div class="progress" style="height: 8px;">
+            <div class="progress-bar bg-primary" role="progressbar" style="width: 75%;" aria-valuenow="75"
+              aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}">
+          Error message
+        </div>
+
+        <div class="card p-4 mb-4">
+          <h4 class="card-title mb-4 fw-bold text-dark border-bottom pb-2">Application Summary</h4>
+
+          <div class="row">
+            <div class="col-md-6 mb-4 mb-md-0 border-end">
+              <h5 class="text-primary fw-semibold mb-3">Policy Information</h5>
+              <div class="mb-2">
+                <span class="info-label">Coverage Option:</span>
+                <span th:text="${journeyForm.coverageType}">SINGLE</span>
+              </div>
+              <div class="mb-2">
+                <span class="info-label">Area of Travel:</span>
+                <span th:text="${journeyForm.areaOfTravel}">AREA 1</span>
+                <div class="small text-muted" th:text="${journeyForm.areaOfTravelDescription}">Australia, Brunei, ...</div>
+              </div>
+              <div class="mb-2">
+                <span class="info-label">Start Date:</span>
+                <span th:text="${#temporals.format(journeyForm.startDate, 'dd MMMM yyyy')}">01 Jan
+                  2026</span>
+              </div>
+              <div class="mb-2">
+                <span class="info-label">End Date:</span>
+                <span th:text="${#temporals.format(journeyForm.endDate, 'dd MMMM yyyy')}">05 Jan
+                  2026</span>
+              </div>
+              <div class="mb-2">
+                <span class="info-label">Selected Plan:</span>
+                <span class="badge bg-primary" th:text="${selectedPlan == 'PLAN_A' ? 'Plan A' : 'Plan B'}">Plan A</span>
+              </div>
+              <div class="mt-4 p-3 bg-light rounded-3 text-center">
+                <h6 class="text-secondary mb-1">Total Calculated Premium</h6>
+                <h2 class="text-success fw-bold mb-0">
+                  RM <span th:text="${#numbers.formatDecimal(totalPrice, 1, 'COMMA', 2, 'POINT')}">120.00</span>
+                </h2>
+              </div>
+            </div>
+
+            <div class="col-md-6 ps-md-4">
+              <h5 class="text-primary fw-semibold mb-3">Insured Member Details</h5>
+              <div class="mb-2">
+                <span class="info-label">Full Name:</span>
+                <span th:text="${customerForm.fullName}">Ali Muthu</span>
+              </div>
+              <div class="mb-2">
+                <span class="info-label">NRIC:</span>
+                <span th:text="${customerForm.nric}">950704141234</span>
+              </div>
+              <div class="mb-2">
+                <span class="info-label">Date of Birth:</span>
+                <span th:text="${#temporals.format(customerForm.dob, 'dd MMMM yyyy')}">04 Jul
+                  1995</span>
+              </div>
+              <div class="mb-2">
+                <span class="info-label">Gender:</span>
+                <span th:text="${customerForm.gender}">MALE</span>
+              </div>
+              <div class="mb-2">
+                <span class="info-label">Email:</span>
+                <span th:text="${customerForm.email}">ali.muthu@example.com</span>
+              </div>
+              <div class="mb-2">
+                <span class="info-label">Mobile No:</span>
+                <span th:text="${customerForm.mobileNo}">0123456789</span>
+              </div>
+              <div class="mb-2">
+                <span class="info-label">Address:</span>
+                <span>
+                  <span th:text="${customerForm.addressLine1}">No 123, Jalan Bukit</span><br>
+                  <span th:if="${customerForm.addressLine2}" th:text="${customerForm.addressLine2}">Taman Indah</span>
+                </span>
+              </div>
+              <div class="mb-2">
+                <span class="info-label">Postcode:</span>
+                <span th:text="${customerForm.postcode}">50450</span>
+              </div>
+            </div>
+          </div>
+
+          <form th:action="@{/step4}" method="post" class="mt-4 border-top pt-4">
+            <div class="alert alert-info py-2 small text-muted">
+              ℹ By clicking "Confirm & Purchase", you certify that the information provided is correct and
+              you agree to terms of the policy.
+            </div>
+            <div class="d-flex justify-content-between">
+              <a th:href="@{/step3}" class="btn btn-outline-secondary btn-lg px-4">Back</a>
+              <button type="submit" class="btn btn-success btn-lg px-5 fw-bold">Confirm &
+                Purchase</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>
